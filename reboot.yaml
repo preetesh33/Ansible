@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: false
+  serial: 1
+  tasks:
+   - name: Check the uptime
+     shell: uptime
+     register: shell_output
+   - debug: var=shell_output.stdout_lines
+
+   - name: Rebooting all nodes
+     reboot:
+
+   - name: Check the uptime after reboot
+     shell: uptime
+     register: shell_output
+   - debug: var=shell_output.stdout_lines

@@ -1,0 +1,49 @@
+ - hosts: all
+   gather_facts: false
+   tasks:
+     - name: disabling all repos
+       shell: yum-config-manager --disable \*
+       register: shell_output
+     - debug: var=shell_output.stdout_lines
+     - name: wait for 5 sec's.
+       wait_for:
+         timeout: 5
+
+     - name: enabling CentOS repos
+       shell: yum-config-manager --enable centos_extras centos_os centos_scl-rh centos_os centos_updates epel
+       register: shell_output
+     - debug: var=shell_output.stdout_lines
+     - name: wait for 5 sec's.
+       wait_for:
+         timeout: 5    
+
+     - name: Cleaning yum cache
+       shell: yum clean all 
+       register: shell_output
+     - debug: var=shell_output.stdout_lines
+
+     - name: Downloading repository metadata 
+       shell: yum repolist 
+       register: shell_output
+     - debug: var=shell_output.stdout_lines 
+     - name: wait for 5 sec's.
+       wait_for:
+         timeout: 5      
+
+     - name: Getting check-update rpms list 
+       shell: yum check-update | tee /tmp/check-update.log
+       register: shell_output
+     - debug: var=shell_output.stdout_lines  
+     - name: wait for 5 sec's.
+       wait_for:
+         timeout: 5     
+
+     - name: Updating all rpms 
+       shell: yum update -y
+       register: shell_output
+     - debug: var=shell_output.stdout_lines  
+
+     - name: enabling all repos
+       shell: yum-config-manager --enable \*
+       register: shell_output
+     - debug: var=shell_output.stdout_lines
